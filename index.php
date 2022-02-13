@@ -1,18 +1,38 @@
 <?php
-$previus_array = (file_get_contents('/file_of_array') != '') 
-    ? (file_get_contents('/file_of_array') ?? [])
+$previus_array = (file_get_contents('file_of_array.php') != '') 
+    ? (file_get_contents('file_of_array.php') ?? [])
+    : [];
+$funciones = [];
+
+$array = 
+    (isset($_POST['type']))
+    ?   
+        (
+            ($_POST['type'] == 'create_account') 
+            ? 
+                array_merge($previus_array, [
+                    'user'          => $_POST['user'], 
+                    'password_id'   => $_POST['password_id'],
+                ])
+            : $previus_array
+        )
     : [];
 
-$dd = 
-(function()
-{
-    
-})($_POST['type'], $_POST['user'], $_POST['password_id']);
+$login = (
+    fn() :bool => 
+        array_reduce(
+            $array, 
+            fn($carry, $item) : bool => 
+                ($carry == false)
+                    ?
+                        ($item['user']           == $_POST['user'] && 
+                        $item['password_id']    == $_POST['password_id'])
+                    : $carry,
+            false
+        )
+    )();
 
-$array = $_POST['type'] == 'login' 
-    ? array_merge($previus_array, )
-    : $previus_array;
-isset($_POST);
+
 
 ?>
 <!DOCTYPE html>
@@ -24,6 +44,11 @@ isset($_POST);
     <title>Document</title>
 </head>
 <body>
+    <h1><?php print(
+        ($login)
+        ? "Sesión iniciada"
+        : 'Aún no se ha iniciado sessión'
+    );?></h1>
     <h2>Iniciar sesión</h2>
     <form action="" method="post">
         <input type="hidden" name="type" value="login">
